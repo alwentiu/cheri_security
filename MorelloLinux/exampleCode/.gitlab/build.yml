@@ -1,0 +1,46 @@
+stages:
+  - build
+
+build-aarch64-llvm:
+  image: ${CI_REGISTRY}/morello/morello-ci-restricted-containers/morello-morelloie:latest.arm64
+  variables:
+    MORELLOIE_VERSION: 2.3-533
+    MORELLOIE_DOWNLOAD_URL: https://developer.arm.com/-/media/Arm%20Developer%20Community/Downloads/Morello/Development%20Tools/Morello%20Instruction%20Emulator
+    MORELLO_LLVM_VERSION: '1.7'
+    MUSL_GITREF: morello/master
+  stage: build
+  script:
+    - /bin/bash .gitlab/build-aarch64-llvm.sh
+  tags:
+    - arm64
+
+build-aarch64-gcc:
+  image: ${CI_REGISTRY}/morello/morello-ci-restricted-containers/morello-morelloie:latest.arm64
+  variables:
+    MORELLOIE_VERSION: 2.3-533
+    MORELLOIE_DOWNLOAD_URL: https://developer.arm.com/-/media/Arm%20Developer%20Community/Downloads/Morello/Development%20Tools/Morello%20Instruction%20Emulator
+    MORELLO_GCC_VERSION: 10.1.morello-alp2
+    MORELLO_GCC_DOWNLOAD_URL: https://developer.arm.com/-/media/Files/downloads/gnu-morello
+  stage: build
+  script:
+    - /bin/bash .gitlab/build-aarch64-gcc.sh
+  tags:
+    - arm64
+
+build-x86-llvm:
+  image: ${CI_REGISTRY}/morello/morello-ci-restricted-containers/morello-morelloie:latest.amd64
+  variables:
+    MORELLO_LLVM_VERSION: '1.7'
+    MUSL_GITREF: morello/master
+  stage: build
+  script:
+    - /bin/bash .gitlab/build-x86-llvm.sh
+
+build-x86-gcc:
+  image: ${CI_REGISTRY}/morello/morello-ci-restricted-containers/morello-morelloie:latest.amd64
+  variables:
+    MORELLO_GCC_VERSION: 10.1.morello-alp2
+    MORELLO_GCC_DOWNLOAD_URL: https://developer.arm.com/-/media/Files/downloads/gnu-morello
+  stage: build
+  script:
+    - /bin/bash .gitlab/build-x86-gcc.sh

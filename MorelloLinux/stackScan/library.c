@@ -107,7 +107,6 @@ void scan_recursive(void* cap, seenCapabilities* seenHead, int print_cap){
     for(int i = 0; i < len; i+=sizeof(void*)){
         access((char*)(cap+i), 0);
         if(errno == 14){
-            //printf("%#p Segfault, avoiding address\n", (cap+i));
             continue;
         }
 

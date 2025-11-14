@@ -1,0 +1,238 @@
+#!/bin/bash
+
+usage () {
+cat <<EOF
+
+Usage: ${0} [options]... [VAR=VALUE]...
+
+Configuration:
+  --sysroot=DIR         purecap sysroot directory for Clang compiler
+  --sysroot-hybrid=DIR  hybrid sysroot directory for Clang compiler
+  --build=DIR           path to the build folder [build]
+  --enable-debug        enable compiler options for debugging
+  --disable-optimise    disable optimisation
+
+Environment variables:
+  CC                    C compiler command
+  CXX                   C++ compiler command
+  CFLAGS                C compiler flags (common)
+  CXXFLAGS              C++ compiler flags (common)
+  LFLAGS                Linker flags (common)
+
+EOF
+exit 0
+}
+
+# utility functions
+fnmatch () {
+  eval "case \"\${2}\" in ${1}) return 0 ;; *) return 1 ;; esac" ;
+}
+fail () { echo "$*" ; exit 1 ; }
+warn () { echo "$*" ; }
+try_cflag () {
+  echo -n "Checking if C compiler accepts" "${@:2}" "..."
+  if echo "typedef int x;" | ${CC} -x c - ${cflags} "${@:2}" -c -o /dev/null >/dev/null 2>&1 ; then
+    printf "yes\n"
+    eval "${1}=\"\${${1}} \${@:2}\""
+    eval "${1}=\${$1# }"
+    return 0
+  else
+    printf "no\n"
+    return 1
+  fi
+}
+try_cxxflag () {
+  echo -n "Checking if C++ compiler accepts" "${@:2}" "..."
+  if echo "using x = int;" | ${CC} -x c++ - ${cxxflags} "${@:2}" -c -o /dev/null >/dev/null 2>&1 ; then
+    printf "yes\n"
+    eval "${1}=\"\${${1}} \${@:2}\""
+    eval "${1}=\${$1# }"
+    return 0
+  else
+    printf "no\n"
+    return 1
+  fi
+}
+try_lflag () {
+  echo -n "Checking if linker accepts" "${@:2}" "..."
+  if echo "typedef int x;" | ${CC} -x c - ${lflags} "${@:2}" -nostdlib -shared -o /dev/null >/dev/null 2>&1 ; then
+    printf "yes\n"
+    eval "${1}=\"\${${1}} \${@:2}\""
+    eval "${1}=\${$1# }"
+    return 0
+  else
+    printf "no\n"
+    return 1
+  fi
+}
+try_comp_flag () {
+  try_cflag cflags "$@"
+  try_cxxflag cxxflags "$@"
+}
+try_comp_flag_hybrid () {
+  try_cflag cflags_hybrid "$@"
+  try_cxxflag cxxflags_hybrid "$@"
+}
+
+# local variables
+cflags=
+cxxflags=
+cflags_hybrid=
+cxxflags_hybrid=
+lflags=
+lflags_hybrid=
+sysroot=
+sysroot_hybrid=
+debug=0
+optimise=1
+hybrid=1
+build=build
+crtlib=
+crtlib_hybrid=
+
+# scan command line for params and variables
+for arg ; do
+  case "${arg}" in
+    --help|-h) usage ;;
+    --sysroot=*) sysroot=${arg#*=} ;;
+    --sysroot-hybrid=*) sysroot_hybrid=${arg#*=} ;;
+    --build=*) build=${arg#*=} ;;
+    --enable-debug) debug=1 ;;
+    --disable-optimise) optimise=0 ;;
+    -* ) echo "$0: unknown option ${arg}" ;;
+    CC=*) CC=${arg#*=} ;;
+    CFLAGS=*) CFLAGS=${arg#*=} ;;
+    CXXFLAGS=*) CXXFLAGS=${arg#*=} ;;
+    LFLAGS=*) LFLAGS=${arg#*=} ;;
+    *=*) ;;
+  esac
+done
+
+# find type of the compiler
+version="$(LC_ALL=C ${CC} -v 2>&1)"
+if fnmatch '*gcc\ version*' "${version}" ; then
+  family=gcc
+elif fnmatch '*clang\ version*' "${version}" ; then
+  family=clang
+else
+  fail "Compiler ${CC} not supported or doesn't exist"
+fi
+# find C++ compiler and tools
+if [[ "${CXX}" == "" ]] ; then
+  case "${family}" in
+    clang) CXX="${CC}++"; RANLIB="${CC/%clang/"llvm-ranlib"}"; AR="${CC/%clang/"llvm-ar"}" ;;
+    gcc) CXX="${CC/%gcc/"g++"}"; RANLIB="${CC/%gcc/"ranlib"}"; AR="${CC/%gcc/"ar"}" ;;
+  esac
+fi
+
+# find compiler-rt library path
+if [[ "${family}" == "clang" ]] ; then
+  crtlib=$(${CC} -print-libgcc-file-name --target=aarch64-linux-musl_purecap)
+  crtlib_hybrid=$(${CC} -print-libgcc-file-name --target=aarch64-linux-gnu)
+else
+  crtlib=$(${CC} -print-libgcc-file-name -march=morello+c64 -mabi=purecap)
+  crtlib_hybrid=$(${CC} -print-libgcc-file-name)
+fi
+
+# print information
+printf "C compiler: %s (%s)\n" "$CC" "${family}"
+printf "CXX compiler: %s\n" "${CXX}"
+printf "Purecap CRT library: %s\n" "${crtlib}"
+printf "Hybrid CRT library: %s\n" "${crtlib_hybrid}"
+
+# compiler flags
+for flag in ${CFLAGS}; do
+  try_cflag cflags "${flag}"
+  try_cflag cflags_hybrid "${flag}"
+done
+for flag in ${CXXFLAGS}; do
+  try_cxxflag cxxflags "${flag}"
+  try_cxxflag cxxflags_hybrid "${flag}"
+done
+try_comp_flag -Wall -Werror
+try_comp_flag_hybrid -Wall -Werror
+try_cflag cflags -std=c17
+try_cflag cflags_hybrid -std=c17
+try_cxxflag cxxflags -std=c++17
+try_cxxflag cxxflags_hybrid -std=c++17
+if [[ "${debug}" == "1" ]]; then
+  try_comp_flag -g
+  try_comp_flag_hybrid -g
+elif [[ "${optimise}" == "1" ]]; then
+  try_comp_flag -O3
+  try_comp_flag_hybrid -O3
+fi
+if [[ "${family}" == "clang" ]] ; then
+  if [[ "${sysroot}" == "" ]] ; then
+    fail "Purecap sysroot must be provided for Clang (--sysroot=DIR)"
+  fi
+  if [[ "${sysroot_hybrid}" == "" ]] ; then
+    warn "Hybrid sysroot is not provided for Clang (--sysroot-hybrid=DIR)"
+    hybrid=0
+  fi
+  try_comp_flag --target=aarch64-linux-musl_purecap -march=morello
+  try_comp_flag_hybrid --target=aarch64-linux-gnu -march=morello
+  try_comp_flag -mabi=purecap
+  try_comp_flag --sysroot="${sysroot}"
+  if [[ "${hybrid}" == "1" ]]; then
+    try_comp_flag_hybrid --sysroot="${sysroot_hybrid}"
+  fi
+  try_comp_flag -ferror-limit=3
+  try_comp_flag_hybrid -ferror-limit=3
+else
+  try_comp_flag -march=morello+c64
+  try_comp_flag_hybrid -march=morello
+  try_comp_flag -mabi=purecap
+  try_comp_flag -Wno-attributes
+  try_comp_flag_hybrid -Wno-attributes
+  try_comp_flag -fmax-errors=3
+  try_comp_flag_hybrid -fmax-errors=3
+fi
+
+#linker flags
+for flag in ${LFLAGS}; do
+  try_lflag lflags "${flag}"
+  try_lflag lflags_hybrid "${flag}"
+done
+
+if [[ "${family}" == "clang" ]] ; then
+  try_lflag lflags --target=aarch64-linux-musl_purecap -march=morello
+  try_lflag lflags_hybrid --target=aarch64-linux-gnu -march=morello
+  try_lflag lflags -mabi=purecap
+  try_lflag lflags -fuse-ld=lld
+  try_lflag lflags_hybrid -fuse-ld=lld
+  try_lflag lflags --sysroot="${sysroot}"
+  if [[ "${hybrid}" == "1" ]]; then
+    try_lflag lflags_hybrid --sysroot="${sysroot_hybrid}"
+  fi
+else
+  try_lflag lflags -march=morello+c64
+  try_lflag lflags_hybrid -march=morello
+  try_lflag lflags -mabi=purecap
+fi
+
+# generate makefile
+cat <<EOF > config.make
+override CC = ${CC}
+override CXX = ${CXX}
+override PURECAP_CRTLIB=${crtlib}
+override HYBRID_CRTLIB=${crtlib_hybrid}
+override AR = ${AR}
+override RANLIB = ${RANLIB}
+override CFLAGS = ${cflags} -MMD
+override CFLAGS_HYBRID = ${cflags_hybrid} -MMD
+override CXXFLAGS = ${cxxflags} -MMD
+override CXXFLAGS_HYBRID = ${cxxflags_hybrid} -MMD
+override LFLAGS = ${lflags}
+override LFLAGS_HYBRID = ${lflags_hybrid}
+override COMPILER_FAMILY = ${family}
+override CLANG_SYSROOT = ${sysroot}
+override CLANG_SYSROOT_HYBRID = ${sysroot_hybrid}
+override BUILD = ${build}
+override OBJDIR = ${build}/objects
+override BINDIR = ${build}/bin
+override LIBDIR = ${build}/lib
+override DEBUG = ${debug}
+override HYBRID = ${hybrid}
+override COMPILER_INCLUDE_DIR = $(${CC} --print-file-name include)
+EOF

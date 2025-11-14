@@ -71,40 +71,6 @@ void print_obj(void* object){
 			printf("%#p:\n %s\n", testKey, testKey);
 	} 
 
-
-	
-	/*
-
-
-	printf("\nGoing backwards\n");
-	TAILQ_HEAD(tailhead, OBJ_ENTRY);
-
-	obj_next = TAILQ_PREV(obj, tailhead, next);
-	
-	do{	
-		printf("Magic: %lld\nVersion: %lld\npath: %s\n", obj_next->magic, obj_next->version, obj_next->path);
-		obj_last = obj_next;	
-
-		obj_next = TAILQ_PREV(obj_next, tailhead, next);
-
-	} while(obj_next != NULL);
-
-
-	void** test = (void**) obj_last;
-  	test += 6;
-	void* map = *test;
-
-	seenCapabilities *head = malloc(sizeof(seenCapabilities));
-		
-	head->next = NULL;
-	head->capability = head;
-
-	scan_recursive(map, head, 0);
-	printf("Found: \n");
-	printList(head);
-
-	*/
-
 	return;
 }
 

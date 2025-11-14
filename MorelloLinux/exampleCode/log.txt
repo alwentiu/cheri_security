@@ -1,0 +1,67 @@
+callback():
+ Name: "/proc/self/exe" (9 segments)
+ - stack (CSP):             0xffffe6209750 [rwRW,0xffffde200000-0xffffe6210000]
+ - program counter (PCC):   0x211f6c [rxRE,0x200240-0x22aa80]
+ - base address:            0x0 [r,0x40-0x238] (invalid)
+maincsp : 0xffffe6209850 [rwRW,0xffffde200000-0xffffe6210000]
+a1: 0xffffa8929070 [rwRW,0xffffa8929070-0xffffa8929170]
+0xffffa89291b0 [rwRW,0xffffa89291b0-0xffffa89292b0]
+alloc again: 0xffffa89292f0 [rwRW,0xffffa89292f0-0xffffa89293f0]
+callback():
+ Name: "/proc/self/exe" (9 segments)
+ - stack (CSP):             0xffffa8926e70 [rwRW,0xffffa8924000-0xffffa8927000]
+ - program counter (PCC):   0x211f6c [rxRE,0x200240-0x22aa80]
+ - base address:            0x0 [r,0x40-0x238] (invalid)
+scanning stack:
+
+
+comaprt. csp cap: 0xffffa8926f70 [rwRW,0xffffa8924000-0xffffa8927000]
+starting scan...
+
+Valid cap found: 0xffffa8926f70 [rwRW,0xffffa8924000-0xffffa8927000]
+    Scanning cap: 0xffffa8926f70 [rwRW,0xffffa8924000-0xffffa8927000]
+    0xffffa8924000 [rwRW,0xffffa8924000-0xffffa8927000], valid: (1)
+
+    0xffffa8924000 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924100 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924200 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924300 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924400 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924500 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924600 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924700 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924800 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924900 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8924a00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0xffffa8924a20 [rwRW,0xffffa8924a20-0xffffa8924b20]
+        Scanning cap: 0xffffa8924a20 [rwRW,0xffffa8924a20-0xffffa8924b20]
+        0xffffa8924a20 [rwRW,0xffffa8924a20-0xffffa8924b20], valid: (1)
+
+        0xffffa8924a20 [rwRW,0xffffa8924a20-0xffffa8924b20]: cap found: 0x46
+	done..
+
+    0xffffa8924b00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0 [xRWE,0x0-0xffffffffffffffff] (invalid)
+    0xffffa8924c00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x1 [w,0x0-0xffffffffffffffff] (invalid)
+    0xffffa8924d00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0xffffa8924ec4 [rwRW,0xffffa8924ec4-0xffffa8924ec8]
+    0xffffa8924e00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0xffffa8924fb0 [rwRW,0xffffa8924fb0-0xffffa8924fbc]
+    0xffffa8924f00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925000 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925100 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925200 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925300 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925400 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925500 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925600 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925700 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925800 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925900 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925a00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925b00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925c00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925d00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925e00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8925f00 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8926000 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8926100 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8926200 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8926300 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0
+    0xffffa8926400 [rwRW,0xffffa8924000-0xffffa8927000]: cap found: 0x0

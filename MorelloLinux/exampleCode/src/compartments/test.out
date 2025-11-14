@@ -1,0 +1,66 @@
+real sealer: 0x7 [,0x0-0x8000]
+&priv:          0000aaaaaaad3350 1 [0000aaaaaaad3350:0000aaaaaaad3360) GrRMwWL----------- none 0 of 16
+priv:           0000fffff7e1a000 1 [0000fffff7e1a000:0000fffff7e1a060) GrRMwWL-----I----- none 0 of 96
+priv->data:     0000fffff7e1a060 1 [0000fffff7e1a060:0000fffff7e1a0e0) GrRMwWL----------- none 0 of 128
+priv->owning:   0000fffff7e1a000 1 [0000fffff7e1a000:0000fffff7e1b000) GrRMwWL-----I-V--- none 0 of 4096
+priv->stack:    0000fffff7e1a000 1 [0000fffff7e16000:0000fffff7e1a000) GrRMwWL----------- none 16384 of 16384
+Sealed: 0xfffff7e1a000 [rwRW,0xfffff7e1a000-0xfffff7e1a060] (sealed)
+priv:           0000fffff7e1a000 1 [0000fffff7e1a000:0000fffff7e1a060) GrRMwWL-----I----- 0007 0 of 96
+fn:             0000fffff7e15001 1 [0000fffff7e15000:0000fffff7e150c0) GrRM---xES-------- rb   1 of 192
+before...
+csp:            0000ffffffffefe0 1 [0000fffff8000000:0001000000000000) GrRMwWL----------- none 134213600 of 134217728
+inside...
+csp:            0000fffff7e19f70 1 [0000fffff7e16000:0000fffff7e1a000) GrRMwWL----------- none 16240 of 16384
+after...
+csp:            0000ffffffffefe0 1 [0000fffff8000000:0001000000000000) GrRMwWL----------- none 134213600 of 134217728
+spilled priv:   failed to find in stack
+secret message: hello morello...
+encrypted data: ={��:>��'{��:0��
+before...
+csp:            0000ffffffffefe0 1 [0000fffff8000000:0001000000000000) GrRMwWL----------- none 134213600 of 134217728
+inside...
+csp:            0000fffff7e19f70 1 [0000fffff7e16000:0000fffff7e1a000) GrRMwWL----------- none 16240 of 16384
+after...
+csp:            0000ffffffffefe0 1 [0000fffff8000000:0001000000000000) GrRMwWL----------- none 134213600 of 134217728
+decrypted:      hello morello...
+
+
+Starting malicious code V2
+
+ - dlopen:                  0xfffff7eff110 [rwRW,0xfffff7eff110-0xfffff7eff390]
+starting recursive scan
+	Done looking through 0xaaaaaaab1d69
+	Done looking through 0xfffff7e84841
+	Done looking through 0xaaaaaaab2541
+	Done looking through 0xaaaaaaab25d0
+	Done looking through 0xaaaaaaab255d
+	Done looking through 0xaaaaaaab259d
+	Done looking through 0xfffff7e83f45
+	Done looking through 0xfffff7e84841
+	Done looking through 0xfffff7eb92c9
+	Done looking through 0xfffff7ecc971
+	Done looking through 0xfffff7e84529
+	Done looking through 0xfffff7e8e455
+	Done looking through 0xfffff7eb9605
+	Done looking through 0xfffff7e87e45
+	Done looking through 0xfffff7ea05b5
+	Done looking through 0xfffff7e9da4d
+	Done looking through 0xfffff7ec1381
+	Done looking through 0xfffff7ea0699
+	Done looking through 0xfffff7ed0629
+	Done looking through 0xfffff7eb9901
+	Done looking through 0xaaaaaaaa0000
+	Done looking through 0xaaaaaaab1d69
+	Done looking through 0xfffff7e84841
+	Done looking through 0xaaaaaaab2541
+	Done looking through 0xaaaaaaab25d0
+	Done looking through 0xaaaaaaab255d
+	Done looking through 0xaaaaaaab259d
+	Done looking through 0xfffff7e83f45
+	Done looking through 0xfffff7e84841
+	Done looking through 0xfffff7eb92c9
+	Done looking through 0xfffff7ecc971
+	Done looking through 0xfffff7e84529
+	Done looking through 0xfffff7e8e455
+	Done looking through 0xfffff7eb9605
+	Done looking through 0xfffff7e87e45
