@@ -17,6 +17,25 @@
 #include <sys/queue.h>
 
 #include <errno.h>
+#include <setjmp.h>
+
+/* --- fault-tolerant capability load ---------------------------------------
+ * access() only proves an address is mapped; a capability-load there can still
+ * trap (SIGBUS/SIGSEGV/SIGPROT) on CHERI. Catch that and skip the address so
+ * the scan continues instead of dying. */
+static sigjmp_buf __scan_env;
+static volatile int __scan_faulted;
+static void __scan_fault_handler(int sig){ (void)sig; __scan_faulted = 1; siglongjmp(__scan_env, 1); }
+static void __scan_install_handlers(void){
+    static int done = 0; if(done) return; done = 1;
+    struct sigaction sa; sa.sa_handler = __scan_fault_handler;
+    sigemptyset(&sa.sa_mask); sa.sa_flags = SA_NODEFER;
+    sigaction(SIGBUS,  &sa, NULL);
+    sigaction(SIGSEGV, &sa, NULL);
+#ifdef SIGPROT
+    sigaction(SIGPROT, &sa, NULL);
+#endif
+}
 
 /*
 typedef struct seenCapabilities{
@@ -111,6 +130,7 @@ void * getIndex(seenCapabilities* head, int index){
 }
 
 void scan_recursive(void* cap, seenCapabilities* seenHead, int print_cap){
+    __scan_install_handlers();
     size_t len = cheri_length_get(cap);
     //printf("len: %lu\n", len);
 
@@ -133,7 +153,9 @@ void scan_recursive(void* cap, seenCapabilities* seenHead, int print_cap){
             continue;
         }
 
-        void* __capability new_cap = *((void** __capability)(cap+i));
+        void* __capability new_cap;
+        if(sigsetjmp(__scan_env, 1) != 0){ continue; } /* faulting cap-load: skip */
+        new_cap = *((void** __capability)(cap+i));
         if(print_cap){
             printf("%p: %#p\n", (cap+i), new_cap);
         }
@@ -181,7 +203,7 @@ int testScan(){
 
 	seenCapabilities* head = malloc(sizeof(seenCapabilities));
 
-    	head->next = NULL;
+    head->next = NULL;
   	head->capability = head;
 
 	scan_recursive(csp, head, 0);
