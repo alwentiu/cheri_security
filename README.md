@@ -4,9 +4,12 @@ This repository contains the artifact for the following paper (published at ESOR
 
 > Dariy Guzairov, Alex Potanin, Stephen Kell, Alwen Tiu. A security analysis of CheriBSD and Morello Linux. ESORICS 2026.
 
-The original source code in this artifact was created by Dariy Guzairov. The SSL key leak attack ([sslExample/](sslExample/)) was slightly modified by me (with the help of an AI agent) to make the stack scanning more robust. (The original artifact by Guzairov was created manually without using any AI tools).
+A pre-print of the paper is available on [arxiv.](https://arxiv.org/abs/2601.19074)
+
+The original source code in this artifact was created by Dariy Guzairov. The SSL key leak attack ([sslExample/](./sslExample/) and [sslExample_nosyscall](./sslExample_nosyscall/)) was slightly modified by me (with the help of an AI agent) to make the stack scanning more robust and efficient. (The original artifact by Guzairov was created manually without using any AI tools). 
 
 These PoCs were tested on CheriBSD version releng/25.03-2339ee891fe2 (running baremetal and QEMU), and Morello Linux arm-084782.gpu 6.7.0-g96c45a786534 (running baremetal only).
+
 
 # Repository structure
 
